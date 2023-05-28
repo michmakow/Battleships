@@ -14,7 +14,10 @@ namespace Battleships.Engine
             switch (input)
             {
                 case Consts.QuitLetter:
-                    Console.Clear();
+                    if (!Console.IsOutputRedirected)
+                    {
+                        Console.Clear();
+                    }
                     Console.WriteLine(Properties.Resources.ThanksForPlaying);
                     isRunning = false;
                     break;
@@ -25,12 +28,18 @@ namespace Battleships.Engine
 
                     if (input.Length == 3 && int.Parse(y) > 10)
                     {
-                        Console.Clear();
+                        if (!Console.IsOutputRedirected)
+                        {
+                            Console.Clear();
+                        }
                         Console.WriteLine(Properties.Resources.WrongInput);
                         break;
                     }
 
-                    Console.Clear();
+                    if (!Console.IsOutputRedirected)
+                    {
+                        Console.Clear();
+                    }
                     Console.WriteLine(string.Format(Properties.Resources.Coordinates, x, y));
                     Console.WriteLine(Properties.Resources.Firing);
 
@@ -57,7 +66,10 @@ namespace Battleships.Engine
                     break;
 
                 default:
-                    Console.Clear();
+                    if (!Console.IsOutputRedirected)
+                    {
+                        Console.Clear();
+                    }
                     Console.WriteLine(Properties.Resources.WrongInput);
                     break;
             }

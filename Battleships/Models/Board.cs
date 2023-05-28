@@ -70,7 +70,10 @@ namespace Battleships.Models
         {
             if (!Ships.Any())
             {
-                Console.Clear();
+                if (!Console.IsOutputRedirected)
+                {
+                    Console.Clear();
+                }
                 Console.WriteLine(Properties.Resources.YouWon);
                 isRunning = false;
             }

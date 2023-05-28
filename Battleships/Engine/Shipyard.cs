@@ -16,7 +16,7 @@ namespace Battleships.Engine
             FillBoardWithShips(board);
         }
 
-        public void FillBoardWithShips(Board board)
+        private void FillBoardWithShips(Board board)
         {
             AddShipsToCollection(Consts.EachShipCount, board.Ships);
             PlaceShips(board);
@@ -33,20 +33,20 @@ namespace Battleships.Engine
 
                 switch (direction)
                 {
-                    case 0 when CanBePlacedNorth(x, y, ship.Lenght, board.Map):
-                        PlaceShipNorth(x, y, ship, board.Map);
+                    case 0 when CanBePlacedNorth(x, y, ship.Lenght, board.Map, board.Ships):
+                        PlaceShipNorth(x, y, ship);
                         break;
 
-                    case 1 when CanBePlacedEast(x, y, ship.Lenght, board.Map):
-                        PlaceShipEast(x, y, ship, board.Map);
+                    case 1 when CanBePlacedEast(x, y, ship.Lenght, board.Map, board.Ships):
+                        PlaceShipEast(x, y, ship);
                         break;
 
-                    case 2 when CanBePlacedSouth(x, y, ship.Lenght, board.Map):
-                        PlaceShipSouth(x, y, ship, board.Map);
+                    case 2 when CanBePlacedSouth(x, y, ship.Lenght, board.Map, board.Ships):
+                        PlaceShipSouth(x, y, ship);
                         break;
 
-                    case 3 when CanBePlacedWest(x, y, ship.Lenght, board.Map):
-                        PlaceShipWest(x, y, ship, board.Map);
+                    case 3 when CanBePlacedWest(x, y, ship.Lenght, board.Map, board.Ships):
+                        PlaceShipWest(x, y, ship);
                         break;
 
                     default:
@@ -78,47 +78,66 @@ namespace Battleships.Engine
             }
         }
 
-        private void PlaceShipNorth(int x, int y, Ship ship, string[,] map)
+        private void PlaceShipNorth(int x, int y, Ship ship)
         {
             for (var i = 0; i < ship.Lenght; i++)
             {
-                ship.Coordinates.Add(_stringBuilder.Append((LetterEnum)y - 1).Append(x).ToString());
-                _stringBuilder.Clear();
+                var clearedStringBuidler = _stringBuilder.Clear();
+                ship.Coordinates.Add(clearedStringBuidler.Append((LetterEnum)y - i).Append(x).ToString());
             }
         }
 
-        private void PlaceShipEast(int x, int y, Ship ship, string[,] map)
+        private void PlaceShipEast(int x, int y, Ship ship)
         {
             for (var i = 0; i < ship.Lenght; i++)
             {
-                ship.Coordinates.Add(_stringBuilder.Append((LetterEnum)y).Append(x + 1).ToString());
-                _stringBuilder.Clear();
+                var clearedStringBuidler = _stringBuilder.Clear();
+                ship.Coordinates.Add(clearedStringBuidler.Append((LetterEnum)y).Append(x + i).ToString());
             }
         }
 
-        private void PlaceShipSouth(int x, int y, Ship ship, string[,] map)
+        private void PlaceShipSouth(int x, int y, Ship ship)
         {
             for (var i = 0; i < ship.Lenght; i++)
             {
-                ship.Coordinates.Add(_stringBuilder.Append((LetterEnum)y + i).Append(x).ToString());
-                _stringBuilder.Clear();
+                var clearedStringBuidler = _stringBuilder.Clear();
+                ship.Coordinates.Add(clearedStringBuidler.Append((LetterEnum)y + i).Append(x).ToString());
             }
         }
 
-        private void PlaceShipWest(int x, int y, Ship ship, string[,] map)
+        private void PlaceShipWest(int x, int y, Ship ship)
         {
             for (var i = 0; i < ship.Lenght; i++)
             {
-                ship.Coordinates.Add(_stringBuilder.Append((LetterEnum)y).Append(x - i).ToString());
-                _stringBuilder.Clear();
+                var clearedStringBuidler = _stringBuilder.Clear();
+                ship.Coordinates.Add(clearedStringBuidler.Append((LetterEnum)y).Append(x - i).ToString());
             }
         }
 
-        private bool CanBePlacedNorth(int x, int y, int shipLenght, string[,] map)
+        private bool CanBePlacedNorth(int x, int y, int shipLenght, string[,] map, List<Ship> ships)
         {
             for (var i = 0; i < shipLenght; i++)
             {
-                if (!string.IsNullOrEmpty(map[x, y - i]))
+                var clearedStringBuidler = _stringBuilder.Clear();
+                var searchedCoordinates = clearedStringBuidler.Append((LetterEnum)y - i).Append(x).ToString();
+                if (ships.Find(s => s.Coordinates.Contains(searchedCoordinates)) is not null
+                    || !string.IsNullOrEmpty(map[y - i, x]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool CanBePlacedEast(int x, int y, int shipLenght, string[,] map, List<Ship> ships)
+        {
+            for (var i = 0; i < shipLenght; i++)
+            {
+                var clearedStringBuidler = _stringBuilder.Clear();
+                var searchedCoordinates = clearedStringBuidler.Append((LetterEnum)y).Append(x + i).ToString();
+                if (x + i > 10 || ships.Find(s => s.Coordinates.Contains(searchedCoordinates)) is not null
+                    || !string.IsNullOrEmpty(map[y, x + i]))
                 {
                     return false;
                 }
@@ -126,11 +145,14 @@ namespace Battleships.Engine
             return true;
         }
 
-        private bool CanBePlacedEast(int x, int y, int shipLenght, string[,] map)
+        private bool CanBePlacedSouth(int x, int y, int shipLenght, string[,] map, List<Ship> ships)
         {
             for (var i = 0; i < shipLenght; i++)
             {
-                if (x + i > 10 || !string.IsNullOrEmpty(map[x + i, y]))
+                var clearedStringBuidler = _stringBuilder.Clear();
+                var searchedCoordinates = clearedStringBuidler.Append((LetterEnum)y + i).Append(x).ToString();
+                if (y + i > 10 || ships.Find(s => s.Coordinates.Contains(searchedCoordinates)) is not null
+                    || !string.IsNullOrEmpty(map[y + i, x]))
                 {
                     return false;
                 }
@@ -138,23 +160,14 @@ namespace Battleships.Engine
             return true;
         }
 
-        private bool CanBePlacedSouth(int x, int y, int shipLenght, string[,] map)
+        private bool CanBePlacedWest(int x, int y, int shipLenght, string[,] map, List<Ship> ships)
         {
             for (var i = 0; i < shipLenght; i++)
             {
-                if (y + i > 10 || !string.IsNullOrEmpty(map[x, y + i]))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private bool CanBePlacedWest(int x, int y, int shipLenght, string[,] map)
-        {
-            for (var i = 0; i < shipLenght; i++)
-            {
-                if (y - i > 10 || !string.IsNullOrEmpty(map[x - i, y]))
+                var clearedStringBuidler = _stringBuilder.Clear();
+                var searchedCoordinates = clearedStringBuidler.Append((LetterEnum)y).Append(x - i).ToString();
+                if (ships.Find(s => s.Coordinates.Contains(searchedCoordinates)) is not null
+                    || !string.IsNullOrEmpty(map[y, x - i]))
                 {
                     return false;
                 }
